@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface MovieRepository {
     fun getMovies(): Flow<List<Movie>>
     fun getFavoriteMovies(): Flow<List<Movie>>
+    suspend fun refreshMovies(page: Int = 1)
     suspend fun toggleFavorite(movieId: String)
 }

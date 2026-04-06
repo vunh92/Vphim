@@ -8,4 +8,5 @@ enum class Destination(
 ) {
     HOME("Trang chủ", R.drawable.ic_home),
     FAVORITES("Yêu thích", R.drawable.ic_favorite),
+//    PROFILE("Cá nhân", R.drawable.ic_account_box),
 }

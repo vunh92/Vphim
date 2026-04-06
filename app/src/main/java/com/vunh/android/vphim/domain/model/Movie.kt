@@ -3,8 +3,13 @@ package com.vunh.android.vphim.domain.model
 data class Movie(
     val id: String,
     val title: String,
-    val description: String,
-    val imageUrl: String,
-    val category: String,
+    val originTitle: String,
+    val slug: String,
+    val posterUrl: String,
+    val thumbUrl: String,
+    val year: Int,
+    val modifiedTime: String,
+    val imdbId: String?,
+    val type: String?,
     val isFavorite: Boolean = false
 )

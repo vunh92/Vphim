@@ -17,6 +17,7 @@
     <string name="home_feature_2">Lời hứa dưới mưa</string>
     <string name="home_feature_3">Hành tinh cuối cùng</string>
     <string name="home_card_subtitle">Tiếp tục phát từ tập gần nhất với chất lượng HD.</string>
+    <string name="home_movie_year_format">Năm phát hành: %1$d</string>
 
     <string name="favorites_title">Danh sách yêu thích</string>
     <string name="favorites_subtitle">Lưu lại phim bạn muốn xem sau và truy cập lại nhanh ở đây.</string>

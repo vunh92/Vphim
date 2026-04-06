@@ -1,36 +1,49 @@
 package com.vunh.android.vphim.data.repository
 
+import com.vunh.android.vphim.data.mapper.toDomain
+import com.vunh.android.vphim.data.remote.api.PhimApiService
 import com.vunh.android.vphim.domain.model.Movie
 import com.vunh.android.vphim.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MovieRepositoryImpl @Inject constructor() : MovieRepository {
-    private val movies = MutableStateFlow(
-        listOf(
-            Movie("1", "Thám tử phố đêm", "Mô tả phim...", "url1", "Hành động"),
-            Movie("2", "Lời hứa dưới mưa", "Mô tả phim...", "url2", "Tình cảm"),
-            Movie("3", "Hành tinh cuối cùng", "Mô tả phim...", "url3", "Anime")
-        )
-    )
+class MovieRepositoryImpl @Inject constructor(
+    private val phimApiService: PhimApiService,
+) : MovieRepository {
+    private val remoteMovies = MutableStateFlow<List<Movie>>(emptyList())
+    private val favoriteMovieIds = MutableStateFlow<Set<String>>(emptySet())
 
-    override fun getMovies(): Flow<List<Movie>> = movies
+    override fun getMovies(): Flow<List<Movie>> {
+        return combine(remoteMovies, favoriteMovieIds) { movies, favoriteIds ->
+            movies.map { movie ->
+                movie.copy(isFavorite = movie.id in favoriteIds)
+            }
+        }
+    }
 
-    override fun getFavoriteMovies(): Flow<List<Movie>> = movies.map { list ->
+    override fun getFavoriteMovies(): Flow<List<Movie>> = getMovies().map { list ->
         list.filter { it.isFavorite }
     }
 
-    override suspend fun toggleFavorite(movieId: String) {
-        val currentList = movies.value.toMutableList()
-        val index = currentList.indexOfFirst { it.id == movieId }
-        if (index != -1) {
-            val movie = currentList[index]
-            currentList[index] = movie.copy(isFavorite = !movie.isFavorite)
-            movies.value = currentList
+    override suspend fun refreshMovies(page: Int) {
+        val response = phimApiService.getLatestMovies(page = page)
+        remoteMovies.value = response.items.map { movieDto ->
+            movieDto.toDomain()
         }
+    }
+
+    override suspend fun toggleFavorite(movieId: String) {
+        val currentIds = favoriteMovieIds.value.toMutableSet()
+        if (movieId in currentIds) {
+            currentIds.remove(movieId)
+        } else {
+            currentIds.add(movieId)
+        }
+        favoriteMovieIds.value = currentIds
     }
 }

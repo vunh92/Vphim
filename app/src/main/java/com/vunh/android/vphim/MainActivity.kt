@@ -24,7 +24,9 @@ import com.vunh.android.vphim.presentation.ui.screen.favorite.FavoriteScreen
 import com.vunh.android.vphim.presentation.ui.screen.home.HomeScreen
 import com.vunh.android.vphim.presentation.ui.screen.profile.ProfileScreen
 import com.vunh.android.vphim.ui.theme.VphimTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +65,7 @@ fun VphimApp() {
                 when (currentDestination) {
                     Destination.HOME -> HomeScreen()
                     Destination.FAVORITES -> FavoriteScreen()
-                    // If profile tab is needed, we can add it here or update Destination enum
+//                    Destination.PROFILE -> ProfileScreen()
                 }
             }
         }
