@@ -2,6 +2,7 @@ package com.vunh.android.vphim.data.repository
 
 import com.vunh.android.vphim.data.mapper.toDomain
 import com.vunh.android.vphim.data.remote.api.PhimApiService
+import com.vunh.android.vphim.domain.model.Category
 import com.vunh.android.vphim.domain.model.Movie
 import com.vunh.android.vphim.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
@@ -45,5 +46,10 @@ class MovieRepositoryImpl @Inject constructor(
             currentIds.add(movieId)
         }
         favoriteMovieIds.value = currentIds
+    }
+
+    override suspend fun getCategories(): List<Category> {
+        val response = phimApiService.getCategories()
+        return response.items.map { it.toDomain() }
     }
 }

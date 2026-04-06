@@ -1,5 +1,6 @@
 package com.vunh.android.vphim.domain.repository
 
+import com.vunh.android.vphim.domain.model.Category
 import com.vunh.android.vphim.domain.model.Movie
 import kotlinx.coroutines.flow.Flow
 
@@ -8,4 +9,5 @@ interface MovieRepository {
     fun getFavoriteMovies(): Flow<List<Movie>>
     suspend fun refreshMovies(page: Int = 1)
     suspend fun toggleFavorite(movieId: String)
+    suspend fun getCategories(): List<Category>
 }
