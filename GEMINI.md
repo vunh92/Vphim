@@ -14,7 +14,7 @@ This file contains guidelines for AI agents working in this repository.
 - UI với Jetpack Compose (có @Preview)
 - ViewModel được inject bởi Hilt (@HiltViewModel)
 
-### 2. **Domain Layer** (Màu xanh dương)
+### 2. **Domain Layer** (Màu xanh dương)  
 - Use Cases (business logic)
 - Domain Models
 - Repository Interfaces (không phụ thuộc Android)
