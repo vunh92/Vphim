@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Vphim</string>
+    <string name="bottom_nav_home">Trang chủ</string>
+    <string name="bottom_nav_favorites">Yêu thích</string>
+    <string name="bottom_nav_profile">Cá nhân</string>
+
+    <string name="home_badge">VPHIM</string>
+    <string name="home_title">Kho phim cho buổi tối của bạn</string>
+    <string name="home_subtitle">Khám phá nội dung mới, tiếp tục phim đang xem và chuyển tab nhanh bằng thanh điều hướng phía dưới.</string>
+    <string name="home_categories_title">Danh mục nổi bật</string>
+    <string name="home_continue_title">Xem tiếp</string>
+    <string name="home_category_action">Hành động</string>
+    <string name="home_category_romance">Tình cảm</string>
+    <string name="home_category_family">Gia đình</string>
+    <string name="home_category_anime">Anime</string>
+    <string name="home_feature_1">Thám tử phố đêm</string>
+    <string name="home_feature_2">Lời hứa dưới mưa</string>
+    <string name="home_feature_3">Hành tinh cuối cùng</string>
+    <string name="home_card_subtitle">Tiếp tục phát từ tập gần nhất với chất lượng HD.</string>
+
+    <string name="favorites_title">Danh sách yêu thích</string>
+    <string name="favorites_subtitle">Lưu lại phim bạn muốn xem sau và truy cập lại nhanh ở đây.</string>
+    <string name="favorite_item_1">Mật mã đại dương</string>
+    <string name="favorite_item_2">Chuyến tàu phương Bắc</string>
+    <string name="favorite_item_3">Thanh âm mùa hạ</string>
+    <string name="favorites_item_description">Đã thêm vào thư viện cá nhân và sẵn sàng phát lại.</string>
+
+    <string name="profile_avatar_initials">VN</string>
+    <string name="profile_name">Vu Nguyen</string>
+    <string name="profile_email">vu.nguyen@example.com</string>
+    <string name="profile_section_title">Quản lý tài khoản</string>
+    <string name="profile_action_history">Lịch sử xem</string>
+    <string name="profile_action_downloads">Tải xuống</string>
+    <string name="profile_action_settings">Cài đặt phát</string>
+    <string name="profile_action_manage">Mở</string>
+</resources>
