@@ -67,7 +67,9 @@ fun VphimApp() {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
                 when (currentDestination) {
-                    Destination.HOME -> HomeScreen()
+                    Destination.HOME -> HomeScreen(
+                        onNavigateToDestination = { currentDestination = it }
+                    )
                     Destination.SERIES -> SeriesScreen()
                     Destination.SINGLE -> SingleMoviesScreen()
                     Destination.ANIME -> AnimeMoviesScreen()

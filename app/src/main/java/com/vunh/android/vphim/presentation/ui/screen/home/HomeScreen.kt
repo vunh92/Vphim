@@ -47,11 +47,13 @@ import com.vunh.android.vphim.R
 import com.vunh.android.vphim.domain.model.Movie
 import com.vunh.android.vphim.presentation.ui.components.ContentCard
 import com.vunh.android.vphim.presentation.ui.components.SectionTitle
+import com.vunh.android.vphim.presentation.ui.navigation.Destination
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    onNavigateToDestination: (Destination) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -136,7 +138,7 @@ fun HomeScreen(
                     ) {
                         SectionTitle(title = stringResource(R.string.home_series_movies_title))
                         TextButton(
-                            onClick = { viewModel.onEvent(HomeUiEvent.OnSeeMoreSeriesMovies) }
+                            onClick = { onNavigateToDestination(Destination.SERIES) }
                         ) {
                             Text(
                                 text = stringResource(R.string.home_see_more),
@@ -168,7 +170,7 @@ fun HomeScreen(
                     ) {
                         SectionTitle(title = stringResource(R.string.home_single_movies_title))
                         TextButton(
-                            onClick = { viewModel.onEvent(HomeUiEvent.OnSeeMoreSingleMovies) }
+                            onClick = { onNavigateToDestination(Destination.SINGLE) }
                         ) {
                             Text(
                                 text = stringResource(R.string.home_see_more),
@@ -200,7 +202,7 @@ fun HomeScreen(
                     ) {
                         SectionTitle(title = stringResource(R.string.home_anime_movies_title))
                         TextButton(
-                            onClick = { viewModel.onEvent(HomeUiEvent.OnSeeMoreAnimeMovies) }
+                            onClick = { onNavigateToDestination(Destination.ANIME) }
                         ) {
                             Text(
                                 text = stringResource(R.string.home_see_more),
