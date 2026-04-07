@@ -1,5 +1,7 @@
 package com.vunh.android.vphim.domain.model
 
+import java.io.Serializable
+
 data class Movie(
     val id: String,
     val title: String,
@@ -12,4 +14,4 @@ data class Movie(
     val imdbId: String?,
     val type: String?,
     val isFavorite: Boolean = false
-)
+) : Serializable
