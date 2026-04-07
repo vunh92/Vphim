@@ -39,4 +39,13 @@
     <string name="profile_action_downloads">Tải xuống</string>
     <string name="profile_action_settings">Cài đặt phát</string>
     <string name="profile_action_manage">Mở</string>
+    <string name="detail_back">Quay lại</string>
+    <string name="detail_default_type">PHIM</string>
+    <string name="detail_year">Năm %1$d</string>
+    <string name="detail_slug">Slug: %1$s</string>
+    <string name="detail_info_title">Thông tin phim</string>
+    <string name="detail_modified">Cập nhật: %1$s</string>
+    <string name="detail_imdb">IMDb: %1$s</string>
+    <string name="detail_description_title">Giới thiệu</string>
+    <string name="detail_description_content">%1$s là nội dung được lấy từ nguồn phimapi. Tên gốc: %2$s. Năm phát hành: %3$d.</string>
 </resources>

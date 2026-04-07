@@ -1,6 +1,7 @@
 package com.vunh.android.vphim.presentation.ui.screen.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -54,6 +55,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun HomeScreen(
     onNavigateToDestination: (Destination) -> Unit = {},
+    onMovieClick: (Movie) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -73,7 +75,10 @@ fun HomeScreen(
         ) {
             if (bannerMovies.isNotEmpty()) {
                 item {
-                    BannerCarousel(movies = bannerMovies)
+                    BannerCarousel(
+                        movies = bannerMovies,
+                        onMovieClick = onMovieClick
+                    )
                 }
             }
 
@@ -123,7 +128,10 @@ fun HomeScreen(
                         contentPadding = PaddingValues(vertical = 8.dp)
                     ) {
                         items(uiState.actionMovies) { movie ->
-                            ActionMovieItem(movie = movie)
+                            ActionMovieItem(
+                                movie = movie,
+                                onClick = { onMovieClick(movie) }
+                            )
                         }
                     }
                 }
@@ -155,7 +163,10 @@ fun HomeScreen(
                         contentPadding = PaddingValues(vertical = 8.dp)
                     ) {
                         items(uiState.seriesMovies) { movie ->
-                            ActionMovieItem(movie = movie)
+                            ActionMovieItem(
+                                movie = movie,
+                                onClick = { onMovieClick(movie) }
+                            )
                         }
                     }
                 }
@@ -187,7 +198,10 @@ fun HomeScreen(
                         contentPadding = PaddingValues(vertical = 8.dp)
                     ) {
                         items(uiState.singleMovies) { movie ->
-                            ActionMovieItem(movie = movie)
+                            ActionMovieItem(
+                                movie = movie,
+                                onClick = { onMovieClick(movie) }
+                            )
                         }
                     }
                 }
@@ -219,7 +233,10 @@ fun HomeScreen(
                         contentPadding = PaddingValues(vertical = 8.dp)
                     ) {
                         items(uiState.animeMovies) { movie ->
-                            ActionMovieItem(movie = movie)
+                            ActionMovieItem(
+                                movie = movie,
+                                onClick = { onMovieClick(movie) }
+                            )
                         }
                     }
                 }
@@ -239,10 +256,13 @@ fun HomeScreen(
 @Composable
 private fun ActionMovieItem(
     movie: Movie,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.size(width = 150.dp, height = 250.dp),
+        modifier = modifier
+            .size(width = 150.dp, height = 250.dp)
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -278,6 +298,7 @@ private fun ActionMovieItem(
 @Composable
 private fun BannerCarousel(
     movies: List<Movie>,
+    onMovieClick: (Movie) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val pagerState = rememberPagerState(pageCount = { movies.size })
@@ -299,7 +320,10 @@ private fun BannerCarousel(
             state = pagerState,
             modifier = Modifier.fillMaxWidth()
         ) { page ->
-            BannerItem(movie = movies[page])
+            BannerItem(
+                movie = movies[page],
+                onClick = { onMovieClick(movies[page]) }
+            )
         }
 
         Row(
@@ -327,12 +351,14 @@ private fun BannerCarousel(
 @Composable
 private fun BannerItem(
     movie: Movie,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(220.dp),
+            .height(220.dp)
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer

@@ -15,13 +15,16 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.vunh.android.vphim.domain.model.Movie
 import com.vunh.android.vphim.presentation.ui.navigation.Destination
 import com.vunh.android.vphim.presentation.ui.screen.anime.AnimeMoviesScreen
+import com.vunh.android.vphim.presentation.ui.screen.detail.MovieDetailScreen
 import com.vunh.android.vphim.presentation.ui.screen.favorite.FavoriteScreen
 import com.vunh.android.vphim.presentation.ui.screen.home.HomeScreen
 import com.vunh.android.vphim.presentation.ui.screen.series.SeriesScreen
@@ -45,6 +48,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun VphimApp() {
     var currentDestination by rememberSaveable { mutableStateOf(Destination.HOME) }
+    var selectedMovie by remember { mutableStateOf<Movie?>(null) }
+
+    selectedMovie?.let { movie ->
+        MovieDetailScreen(
+            movie = movie,
+            onBack = { selectedMovie = null }
+        )
+        return
+    }
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
@@ -68,7 +80,8 @@ fun VphimApp() {
             Box(modifier = Modifier.padding(innerPadding)) {
                 when (currentDestination) {
                     Destination.HOME -> HomeScreen(
-                        onNavigateToDestination = { currentDestination = it }
+                        onNavigateToDestination = { currentDestination = it },
+                        onMovieClick = { movie -> selectedMovie = movie }
                     )
                     Destination.SERIES -> SeriesScreen()
                     Destination.SINGLE -> SingleMoviesScreen()

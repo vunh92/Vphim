@@ -2,6 +2,7 @@ package com.vunh.android.vphim.data.repository
 
 import com.vunh.android.vphim.data.mapper.toDomain
 import com.vunh.android.vphim.data.remote.api.PhimApiService
+import com.vunh.android.vphim.data.remote.dto.MovieDetailResponseDto
 import com.vunh.android.vphim.domain.model.Category
 import com.vunh.android.vphim.domain.model.Movie
 import com.vunh.android.vphim.domain.repository.MovieRepository
@@ -123,5 +124,9 @@ class MovieRepositoryImpl @Inject constructor(
                 type = "anime"
             )
         }
+    }
+
+    override suspend fun getMovieDetail(slug: String): MovieDetailResponseDto {
+        return phimApiService.getMovieDetail(slug)
     }
 }

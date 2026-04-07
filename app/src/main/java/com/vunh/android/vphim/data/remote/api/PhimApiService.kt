@@ -4,6 +4,7 @@ import com.vunh.android.vphim.data.remote.dto.ActionMoviesResponseDto
 import com.vunh.android.vphim.data.remote.dto.AnimeMoviesResponseDto
 import com.vunh.android.vphim.data.remote.dto.CategoryDto
 import com.vunh.android.vphim.data.remote.dto.LatestMoviesResponseDto
+import com.vunh.android.vphim.data.remote.dto.MovieDetailResponseDto
 import com.vunh.android.vphim.data.remote.dto.SeriesMoviesResponseDto
 import com.vunh.android.vphim.data.remote.dto.SingleMoviesResponseDto
 import retrofit2.http.GET
@@ -44,4 +45,9 @@ interface PhimApiService {
         @Query("page") page: Int,
         @Query("limit") limit: Int
     ): AnimeMoviesResponseDto
+
+    @GET("phim/{slug}")
+    suspend fun getMovieDetail(
+        @Path("slug") slug: String
+    ): MovieDetailResponseDto
 }
