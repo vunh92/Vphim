@@ -10,4 +10,8 @@ interface MovieRepository {
     suspend fun refreshMovies(page: Int = 1)
     suspend fun toggleFavorite(movieId: String)
     suspend fun getCategories(): List<Category>
+    suspend fun getMoviesByCategory(categorySlug: String, page: Int = 1, limit: Int = 10): List<Movie>
+    suspend fun getSeriesMovies(page: Int = 1, limit: Int = 10): List<Movie>
+    suspend fun getSingleMovies(page: Int = 1, limit: Int = 10): List<Movie>
+    suspend fun getAnimeMovies(page: Int = 1, limit: Int = 10): List<Movie>
 }

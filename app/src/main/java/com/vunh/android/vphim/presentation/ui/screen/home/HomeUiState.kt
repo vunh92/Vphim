@@ -5,8 +5,13 @@ import com.vunh.android.vphim.domain.model.Movie
 
 data class HomeUiState(
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val message: String = "",
     val movies: List<Movie> = emptyList(),
     val categories: List<Category> = emptyList(),
+    val actionMovies: List<Movie> = emptyList(),
+    val seriesMovies: List<Movie> = emptyList(),
+    val singleMovies: List<Movie> = emptyList(),
+    val animeMovies: List<Movie> = emptyList(),
     val errorMessage: String? = null,
 )

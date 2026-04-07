@@ -50,6 +50,78 @@ class MovieRepositoryImpl @Inject constructor(
 
     override suspend fun getCategories(): List<Category> {
         val response = phimApiService.getCategories()
-        return response.items.map { it.toDomain() }
+        return response.map { it.toDomain() }
+    }
+
+    override suspend fun getMoviesByCategory(categorySlug: String, page: Int, limit: Int): List<Movie> {
+        val response = phimApiService.getMoviesByCategory(categorySlug, page, limit)
+        return response.data.items.map { movieDto ->
+            Movie(
+                id = movieDto.id,
+                title = movieDto.name,
+                originTitle = movieDto.originName,
+                slug = movieDto.slug,
+                posterUrl = response.data.appDomainCdnImage + '/' + movieDto.posterUrl,
+                thumbUrl = response.data.appDomainCdnImage + '/' + movieDto.thumbUrl,
+                year = movieDto.year,
+                modifiedTime = "",
+                imdbId = null,
+                type = null
+            )
+        }
+    }
+
+    override suspend fun getSeriesMovies(page: Int, limit: Int): List<Movie> {
+        val response = phimApiService.getSeriesMovies(page, limit)
+        return response.data.items.map { movieDto ->
+            Movie(
+                id = movieDto.id,
+                title = movieDto.name,
+                originTitle = movieDto.originName,
+                slug = movieDto.slug,
+                posterUrl = response.data.appDomainCdnImage + '/' + movieDto.posterUrl,
+                thumbUrl = response.data.appDomainCdnImage + '/' + movieDto.thumbUrl,
+                year = movieDto.year,
+                modifiedTime = "",
+                imdbId = null,
+                type = "series"
+            )
+        }
+    }
+
+    override suspend fun getSingleMovies(page: Int, limit: Int): List<Movie> {
+        val response = phimApiService.getSingleMovies(page, limit)
+        return response.data.items.map { movieDto ->
+            Movie(
+                id = movieDto.id,
+                title = movieDto.name,
+                originTitle = movieDto.originName,
+                slug = movieDto.slug,
+                posterUrl = response.data.appDomainCdnImage + '/' + movieDto.posterUrl,
+                thumbUrl = response.data.appDomainCdnImage + '/' + movieDto.thumbUrl,
+                year = movieDto.year,
+                modifiedTime = "",
+                imdbId = null,
+                type = "single"
+            )
+        }
+    }
+
+    override suspend fun getAnimeMovies(page: Int, limit: Int): List<Movie> {
+        val response = phimApiService.getAnimeMovies(page, limit)
+        return response.data.items.map { movieDto ->
+            Movie(
+                id = movieDto.id,
+                title = movieDto.name,
+                originTitle = movieDto.originName,
+                slug = movieDto.slug,
+                posterUrl = response.data.appDomainCdnImage + '/' + movieDto.posterUrl,
+                thumbUrl = response.data.appDomainCdnImage + '/' + movieDto.thumbUrl,
+                year = movieDto.year,
+                modifiedTime = "",
+                imdbId = null,
+                type = "anime"
+            )
+        }
     }
 }

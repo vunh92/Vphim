@@ -2,9 +2,15 @@ package com.vunh.android.vphim.presentation.ui.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vunh.android.vphim.domain.usecase.GetAnimeMoviesUseCase
+import com.vunh.android.vphim.domain.usecase.GetCategoriesUseCase
+import com.vunh.android.vphim.domain.usecase.GetMoviesByCategoryUseCase
 import com.vunh.android.vphim.domain.usecase.GetMoviesUseCase
+import com.vunh.android.vphim.domain.usecase.GetSeriesMoviesUseCase
+import com.vunh.android.vphim.domain.usecase.GetSingleMoviesUseCase
 import com.vunh.android.vphim.domain.usecase.RefreshMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,13 +24,18 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getMoviesUseCase: GetMoviesUseCase,
     private val refreshMoviesUseCase: RefreshMoviesUseCase,
+    private val getCategoriesUseCase: GetCategoriesUseCase,
+    private val getMoviesByCategoryUseCase: GetMoviesByCategoryUseCase,
+    private val getSeriesMoviesUseCase: GetSeriesMoviesUseCase,
+    private val getSingleMoviesUseCase: GetSingleMoviesUseCase,
+    private val getAnimeMoviesUseCase: GetAnimeMoviesUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
         observeMovies()
-        loadMovies()
+        loadData()
     }
 
     private fun observeMovies() {
@@ -32,7 +43,6 @@ class HomeViewModel @Inject constructor(
             .onEach { movies ->
                 _uiState.update { state ->
                     state.copy(
-                        isLoading = false,
                         movies = movies,
                         message = if (movies.isEmpty()) "" else "Đã tải ${movies.size} phim mới cập nhật",
                         errorMessage = null
@@ -42,18 +52,48 @@ class HomeViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun loadMovies() {
+    private fun loadData(isRefreshing: Boolean = false) {
         viewModelScope.launch {
             _uiState.update { state ->
-                state.copy(isLoading = true, errorMessage = null)
+                state.copy(
+                    isLoading = !isRefreshing,
+                    isRefreshing = isRefreshing,
+                    errorMessage = null
+                )
             }
             try {
-                refreshMoviesUseCase()
+                // Tải danh mục, phim hành động, phim bộ, phim lẻ, phim hoạt hình và làm mới danh sách phim song song
+                val categoriesDeferred = async { getCategoriesUseCase() }
+                val actionMoviesDeferred = async { getMoviesByCategoryUseCase(categorySlug = "hanh-dong") }
+                val seriesMoviesDeferred = async { getSeriesMoviesUseCase() }
+                val singleMoviesDeferred = async { getSingleMoviesUseCase() }
+                val animeMoviesDeferred = async { getAnimeMoviesUseCase() }
+                val refreshMoviesDeferred = async { refreshMoviesUseCase() }
+
+                val categories = categoriesDeferred.await()
+                val actionMovies = actionMoviesDeferred.await()
+                val seriesMovies = seriesMoviesDeferred.await()
+                val singleMovies = singleMoviesDeferred.await()
+                val animeMovies = animeMoviesDeferred.await()
+                refreshMoviesDeferred.await()
+
+                _uiState.update { state ->
+                    state.copy(
+                        categories = categories,
+                        actionMovies = actionMovies,
+                        seriesMovies = seriesMovies,
+                        singleMovies = singleMovies,
+                        animeMovies = animeMovies,
+                        isLoading = false,
+                        isRefreshing = false
+                    )
+                }
             } catch (exception: Exception) {
                 _uiState.update { state ->
                     state.copy(
                         isLoading = false,
-                        errorMessage = exception.message ?: "Không thể tải dữ liệu phim"
+                        isRefreshing = false,
+                        errorMessage = exception.message ?: "Không thể tải dữ liệu"
                     )
                 }
             }
@@ -62,7 +102,11 @@ class HomeViewModel @Inject constructor(
 
     fun onEvent(event: HomeUiEvent) {
         when (event) {
-            HomeUiEvent.Refresh -> loadMovies()
+            HomeUiEvent.Refresh -> loadData(isRefreshing = true)
+            HomeUiEvent.OnSeeMoreActionMovies -> {}
+            HomeUiEvent.OnSeeMoreSeriesMovies -> {}
+            HomeUiEvent.OnSeeMoreSingleMovies -> {}
+            HomeUiEvent.OnSeeMoreAnimeMovies -> {}
         }
     }
 }

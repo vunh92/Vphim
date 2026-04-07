@@ -8,6 +8,10 @@
     <string name="home_title">Kho phim cho buổi tối của bạn</string>
     <string name="home_subtitle">Khám phá nội dung mới, tiếp tục phim đang xem và chuyển tab nhanh bằng thanh điều hướng phía dưới.</string>
     <string name="home_categories_title">Danh mục nổi bật</string>
+    <string name="home_action_movies_title">Phim Hành động</string>
+    <string name="home_series_movies_title">Phim Bộ</string>
+    <string name="home_single_movies_title">Phim Lẻ</string>
+    <string name="home_anime_movies_title">Phim Hoạt Hình</string>
     <string name="home_continue_title">Xem tiếp</string>
     <string name="home_category_action">Hành động</string>
     <string name="home_category_romance">Tình cảm</string>
@@ -18,6 +22,7 @@
     <string name="home_feature_3">Hành tinh cuối cùng</string>
     <string name="home_card_subtitle">Tiếp tục phát từ tập gần nhất với chất lượng HD.</string>
     <string name="home_movie_year_format">Năm phát hành: %1$d</string>
+    <string name="home_see_more">Xem thêm</string>
 
     <string name="favorites_title">Danh sách yêu thích</string>
     <string name="favorites_subtitle">Lưu lại phim bạn muốn xem sau và truy cập lại nhanh ở đây.</string>

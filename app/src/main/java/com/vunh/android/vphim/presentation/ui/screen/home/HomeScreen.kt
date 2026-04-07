@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.material3.AssistChip
@@ -27,6 +29,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,102 +49,225 @@ import com.vunh.android.vphim.presentation.ui.components.ContentCard
 import com.vunh.android.vphim.presentation.ui.components.SectionTitle
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val bannerMovies = uiState.movies.take(5)
-    val categories = listOf(
-        stringResource(R.string.home_category_action),
-        stringResource(R.string.home_category_romance),
-        stringResource(R.string.home_category_family),
-        stringResource(R.string.home_category_anime)
-    )
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    PullToRefreshBox(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = { viewModel.onEvent(HomeUiEvent.Refresh) },
+        modifier = Modifier.fillMaxSize()
     ) {
-        item {
-            Card(
-                shape = RoundedCornerShape(28.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.home_badge),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(
-                        text = stringResource(R.string.home_title),
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = if (uiState.errorMessage != null) {
-                            uiState.errorMessage.orEmpty()
-                        } else {
-                            uiState.message.ifBlank { stringResource(R.string.home_subtitle) }
-                        },
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                    )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+            contentPadding = PaddingValues(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            if (bannerMovies.isNotEmpty()) {
+                item {
+                    BannerCarousel(movies = bannerMovies)
+                }
+            }
+
+            if (uiState.categories.isNotEmpty()) {
+                item {
+                    SectionTitle(title = stringResource(R.string.home_categories_title))
+                }
+
+                item {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        items(uiState.categories) { category ->
+                            AssistChip(
+                                onClick = {},
+                                label = { Text(category.name) },
+                                colors = AssistChipDefaults.assistChipColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (uiState.actionMovies.isNotEmpty()) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SectionTitle(title = stringResource(R.string.home_action_movies_title))
+                        TextButton(
+                            onClick = { viewModel.onEvent(HomeUiEvent.OnSeeMoreActionMovies) }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.home_see_more),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(vertical = 8.dp)
+                    ) {
+                        items(uiState.actionMovies) { movie ->
+                            ActionMovieItem(movie = movie)
+                        }
+                    }
+                }
+            }
+
+            if (uiState.seriesMovies.isNotEmpty()) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SectionTitle(title = stringResource(R.string.home_series_movies_title))
+                        TextButton(
+                            onClick = { viewModel.onEvent(HomeUiEvent.OnSeeMoreSeriesMovies) }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.home_see_more),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(vertical = 8.dp)
+                    ) {
+                        items(uiState.seriesMovies) { movie ->
+                            ActionMovieItem(movie = movie)
+                        }
+                    }
+                }
+            }
+
+            if (uiState.singleMovies.isNotEmpty()) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SectionTitle(title = stringResource(R.string.home_single_movies_title))
+                        TextButton(
+                            onClick = { viewModel.onEvent(HomeUiEvent.OnSeeMoreSingleMovies) }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.home_see_more),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(vertical = 8.dp)
+                    ) {
+                        items(uiState.singleMovies) { movie ->
+                            ActionMovieItem(movie = movie)
+                        }
+                    }
+                }
+            }
+
+            if (uiState.animeMovies.isNotEmpty()) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SectionTitle(title = stringResource(R.string.home_anime_movies_title))
+                        TextButton(
+                            onClick = { viewModel.onEvent(HomeUiEvent.OnSeeMoreAnimeMovies) }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.home_see_more),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(vertical = 8.dp)
+                    ) {
+                        items(uiState.animeMovies) { movie ->
+                            ActionMovieItem(movie = movie)
+                        }
+                    }
+                }
+            }
+
+            if (uiState.isLoading && !uiState.isRefreshing) {
+                item {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }
+    }
+}
 
-        if (bannerMovies.isNotEmpty()) {
-            item {
-                BannerCarousel(movies = bannerMovies)
-            }
-        }
-
-        item {
-            SectionTitle(title = stringResource(R.string.home_categories_title))
-        }
-
-        item {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                categories.forEach { category ->
-                    AssistChip(
-                        onClick = {},
-                        label = { Text(category) },
-                        colors = AssistChipDefaults.assistChipColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+@Composable
+private fun ActionMovieItem(
+    movie: Movie,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.size(width = 150.dp, height = 250.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AsyncImage(
+                model = movie.posterUrl,
+                contentDescription = movie.title,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f))
                         )
                     )
-                }
-            }
-        }
-
-        item {
-            SectionTitle(title = stringResource(R.string.home_continue_title))
-        }
-
-        if (uiState.isLoading) {
-            item {
-                CircularProgressIndicator()
-            }
-        }
-
-        items(uiState.movies) { movie ->
-            ContentCard(
-                title = movie.title,
-                subtitle = movie.originTitle.ifBlank {
-                    stringResource(R.string.home_movie_year_format, movie.year)
-                }
+            )
+            Text(
+                text = movie.title,
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(8.dp),
+                style = MaterialTheme.typography.labelLarge,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                maxLines = 2
             )
         }
     }

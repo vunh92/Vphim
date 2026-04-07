@@ -65,7 +65,6 @@ fun VphimApp() {
                 when (currentDestination) {
                     Destination.HOME -> HomeScreen()
                     Destination.FAVORITES -> FavoriteScreen()
-//                    Destination.PROFILE -> ProfileScreen()
                 }
             }
         }
