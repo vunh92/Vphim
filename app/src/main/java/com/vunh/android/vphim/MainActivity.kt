@@ -18,11 +18,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import com.vunh.android.vphim.presentation.ui.navigation.Destination
+import com.vunh.android.vphim.presentation.ui.screen.anime.AnimeMoviesScreen
 import com.vunh.android.vphim.presentation.ui.screen.favorite.FavoriteScreen
 import com.vunh.android.vphim.presentation.ui.screen.home.HomeScreen
-import com.vunh.android.vphim.presentation.ui.screen.profile.ProfileScreen
+import com.vunh.android.vphim.presentation.ui.screen.series.SeriesScreen
+import com.vunh.android.vphim.presentation.ui.screen.single.SingleMoviesScreen
 import com.vunh.android.vphim.ui.theme.VphimTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -64,6 +65,9 @@ fun VphimApp() {
             Box(modifier = Modifier.padding(innerPadding)) {
                 when (currentDestination) {
                     Destination.HOME -> HomeScreen()
+                    Destination.SERIES -> SeriesScreen()
+                    Destination.SINGLE -> SingleMoviesScreen()
+                    Destination.ANIME -> AnimeMoviesScreen()
                     Destination.FAVORITES -> FavoriteScreen()
                 }
             }
