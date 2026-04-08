@@ -37,11 +37,26 @@
     <string name="profile_avatar_initials">VN</string>
     <string name="profile_name">Vu Nguyen</string>
     <string name="profile_email">vu.nguyen@example.com</string>
+    <string name="profile_title">Đăng nhập</string>
+    <string name="profile_back">Quay lại</string>
     <string name="profile_section_title">Quản lý tài khoản</string>
     <string name="profile_action_history">Lịch sử xem</string>
     <string name="profile_action_downloads">Tải xuống</string>
     <string name="profile_action_settings">Cài đặt phát</string>
     <string name="profile_action_manage">Mở</string>
+    <string name="profile_logged_in">Hồ sơ: %1$s</string>
+    <string name="profile_tab_phone">Số điện thoại</string>
+    <string name="profile_tab_account">Tài khoản</string>
+    <string name="profile_welcome_title">Chào mừng bạn đến với Vphim</string>
+    <string name="profile_welcome_subtitle">Đăng nhập để trải nghiệm thêm nhiều tính năng hấp dẫn</string>
+    <string name="profile_register_prompt">Chưa có tài khoản? </string>
+    <string name="profile_register_action">Đăng ký ngay</string>
+    <string name="profile_phone_label">Số điện thoại</string>
+    <string name="profile_phone_placeholder">Nhập số điện thoại của bạn</string>
+    <string name="profile_continue">Tiếp tục</string>
+    <string name="profile_username_label">Tên đăng nhập</string>
+    <string name="profile_password_label">Mật khẩu</string>
+    <string name="profile_login">Đăng nhập</string>
     <string name="detail_back">Quay lại</string>
     <string name="detail_default_type">PHIM</string>
     <string name="detail_year">Năm %1$d</string>
@@ -51,4 +66,7 @@
     <string name="detail_imdb">IMDb: %1$s</string>
     <string name="detail_description_title">Giới thiệu</string>
     <string name="detail_description_content">%1$s là nội dung được lấy từ nguồn phimapi. Tên gốc: %2$s. Năm phát hành: %3$d.</string>
+    <string name="drawer_avatar_initials">VN</string>
+    <string name="drawer_user_name">Vu Nguyen</string>
+    <string name="drawer_user_email">vu.nguyen@example.com</string>
 </resources>

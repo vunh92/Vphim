@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -23,6 +22,7 @@ import com.vunh.android.vphim.presentation.ui.screen.anime.AnimeMoviesScreen
 import com.vunh.android.vphim.presentation.ui.screen.detail.MovieDetailScreen
 import com.vunh.android.vphim.presentation.ui.screen.favorite.FavoriteScreen
 import com.vunh.android.vphim.presentation.ui.screen.home.HomeScreen
+import com.vunh.android.vphim.presentation.ui.screen.profile.ProfileScreen
 import com.vunh.android.vphim.presentation.ui.screen.series.SeriesScreen
 import com.vunh.android.vphim.presentation.ui.screen.single.SingleMoviesScreen
 import com.vunh.android.vphim.ui.theme.VphimTheme
@@ -92,50 +92,56 @@ fun VphimApp() {
             }
         }
     ) {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Box(modifier = Modifier.padding()) {
-                NavHost(
-                    navController = navController,
-                    startDestination = Destination.HOME.route,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    composable(Destination.HOME.route) {
-                        HomeScreen(
-                            onNavigateToDestination = { destination ->
-                                navController.navigate(destination.route) {
-                                    launchSingleTop = true
-                                }
-                            },
-                            onMovieClick = { movie ->
-                                navController.currentBackStackEntry
-                                    ?.savedStateHandle
-                                    ?.set(SELECTED_MOVIE_KEY, movie)
-                                navController.navigate("$DETAIL_ROUTE/${movie.slug}")
+        Box(modifier = Modifier.fillMaxSize()) {
+            NavHost(
+                navController = navController,
+                startDestination = Destination.HOME.route,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                composable(Destination.HOME.route) {
+                    HomeScreen(
+                        onNavigateToDestination = { destination ->
+                            navController.navigate(destination.route) {
+                                launchSingleTop = true
                             }
+                        },
+                        onMovieClick = { movie ->
+                            navController.currentBackStackEntry
+                                ?.savedStateHandle
+                                ?.set(SELECTED_MOVIE_KEY, movie)
+                            navController.navigate("$DETAIL_ROUTE/${movie.slug}")
+                        },
+                        onLoginClick = {
+                            navController.navigate(LOGIN_ROUTE)
+                        }
+                    )
+                }
+                composable(Destination.SERIES.route) { SeriesScreen() }
+                composable(Destination.SINGLE.route) { SingleMoviesScreen() }
+                composable(Destination.ANIME.route) { AnimeMoviesScreen() }
+                composable(Destination.FAVORITES.route) { FavoriteScreen() }
+                composable(LOGIN_ROUTE) {
+                    ProfileScreen(
+                        onBackClick = { navController.navigateUp() }
+                    )
+                }
+                composable(
+                    route = "$DETAIL_ROUTE/{$DETAIL_SLUG_ARG}",
+                    arguments = listOf(
+                        navArgument(DETAIL_SLUG_ARG) { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val movie = navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.get<Movie>(SELECTED_MOVIE_KEY)
+                        ?: fallbackMovie(
+                            slug = backStackEntry.arguments?.getString(DETAIL_SLUG_ARG).orEmpty()
                         )
-                    }
-                    composable(Destination.SERIES.route) { SeriesScreen() }
-                    composable(Destination.SINGLE.route) { SingleMoviesScreen() }
-                    composable(Destination.ANIME.route) { AnimeMoviesScreen() }
-                    composable(Destination.FAVORITES.route) { FavoriteScreen() }
-                    composable(
-                        route = "$DETAIL_ROUTE/{$DETAIL_SLUG_ARG}",
-                        arguments = listOf(
-                            navArgument(DETAIL_SLUG_ARG) { type = NavType.StringType }
-                        )
-                    ) { backStackEntry ->
-                        val movie = navController.previousBackStackEntry
-                            ?.savedStateHandle
-                            ?.get<Movie>(SELECTED_MOVIE_KEY)
-                            ?: fallbackMovie(
-                                slug = backStackEntry.arguments?.getString(DETAIL_SLUG_ARG).orEmpty()
-                            )
 
-                        MovieDetailScreen(
-                            movie = movie,
-                            onBack = { navController.navigateUp() }
-                        )
-                    }
+                    MovieDetailScreen(
+                        movie = movie,
+                        onBack = { navController.navigateUp() }
+                    )
                 }
             }
         }
@@ -145,6 +151,7 @@ fun VphimApp() {
 private const val DETAIL_ROUTE = "detail"
 private const val DETAIL_SLUG_ARG = "slug"
 private const val SELECTED_MOVIE_KEY = "selected_movie"
+private const val LOGIN_ROUTE = "login"
 
 private fun fallbackMovie(slug: String): Movie {
     return Movie(

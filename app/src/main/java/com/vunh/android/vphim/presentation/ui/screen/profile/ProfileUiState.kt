@@ -1,7 +1,10 @@
 package com.vunh.android.vphim.presentation.ui.screen.profile
 
 data class ProfileUiState(
-    val name: String = "Nguyễn Văn A",
-    val email: String = "vunh@example.com",
-    val isLoading: Boolean = false
+    val isLoggedIn: Boolean = false,
+    val name: String = "",
+    val email: String = "",
+    val isLoading: Boolean = false,
+    val phoneNumber: String = "",
+    val phoneNumberError: String? = null,
 )
