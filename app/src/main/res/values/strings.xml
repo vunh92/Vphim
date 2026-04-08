@@ -57,6 +57,19 @@
     <string name="profile_username_label">Tên đăng nhập</string>
     <string name="profile_password_label">Mật khẩu</string>
     <string name="profile_login">Đăng nhập</string>
+
+    <string name="profile_otp_title">Xác thực số điện thoại</string>
+    <string name="profile_otp_subtitle">Mã xác thực đã được gửi đến số\n%1$s</string>
+    <string name="profile_otp_placeholder">______</string>
+    <string name="profile_otp_confirm">Xác nhận</string>
+    <string name="profile_otp_cancel">Hủy</string>
+
+    <string name="profile_edit">Chỉnh sửa hồ sơ</string>
+    <string name="profile_edit_name_label">Tên người dùng</string>
+    <string name="profile_save">Lưu</string>
+    <string name="profile_cancel">Hủy</string>
+    <string name="profile_logout">Đăng xuất</string>
+
     <string name="detail_back">Quay lại</string>
     <string name="detail_default_type">PHIM</string>
     <string name="detail_year">Năm %1$d</string>
