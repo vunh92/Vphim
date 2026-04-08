@@ -93,7 +93,7 @@ fun VphimApp() {
         }
     ) {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding)) {
+            Box(modifier = Modifier.padding()) {
                 NavHost(
                     navController = navController,
                     startDestination = Destination.HOME.route,

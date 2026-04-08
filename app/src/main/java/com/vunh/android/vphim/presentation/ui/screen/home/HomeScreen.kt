@@ -27,10 +27,14 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -55,202 +60,250 @@ import kotlinx.coroutines.delay
 @Composable
 fun HomeScreen(
     onNavigateToDestination: (Destination) -> Unit = {},
+    onMenuClick: () -> Unit = {},
     onMovieClick: (Movie) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val bannerMovies = uiState.movies.take(5)
 
-    PullToRefreshBox(
-        isRefreshing = uiState.isRefreshing,
-        onRefresh = { viewModel.onEvent(HomeUiEvent.Refresh) },
+    Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        LazyColumn(
+        HomeAppBar(
+            onMenuClick = onMenuClick,
             modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentPadding = PaddingValues(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background)
+        )
+
+        PullToRefreshBox(
+            isRefreshing = uiState.isRefreshing,
+            onRefresh = { viewModel.onEvent(HomeUiEvent.Refresh) },
+            modifier = Modifier.fillMaxSize()
         ) {
-            if (bannerMovies.isNotEmpty()) {
-                item {
-                    BannerCarousel(
-                        movies = bannerMovies,
-                        onMovieClick = onMovieClick
-                    )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                if (bannerMovies.isNotEmpty()) {
+                    item {
+                        BannerCarousel(
+                            movies = bannerMovies,
+                            onMovieClick = onMovieClick
+                        )
+                    }
                 }
-            }
 
-            if (uiState.categories.isNotEmpty()) {
-                item {
-                    SectionTitle(title = stringResource(R.string.home_categories_title))
-                }
+                if (uiState.categories.isNotEmpty()) {
+                    item {
+                        SectionTitle(title = stringResource(R.string.home_categories_title))
+                    }
 
-                item {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        items(uiState.categories) { category ->
-                            AssistChip(
-                                onClick = {},
-                                label = { Text(category.name) },
-                                colors = AssistChipDefaults.assistChipColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    item {
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            items(uiState.categories) { category ->
+                                AssistChip(
+                                    onClick = {},
+                                    label = { Text(category.name) },
+                                    colors = AssistChipDefaults.assistChipColors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
-            }
 
-            if (uiState.actionMovies.isNotEmpty()) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        SectionTitle(title = stringResource(R.string.home_action_movies_title))
-                        TextButton(
-                            onClick = { viewModel.onEvent(HomeUiEvent.OnSeeMoreActionMovies) }
+                if (uiState.actionMovies.isNotEmpty()) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = stringResource(R.string.home_see_more),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                            SectionTitle(title = stringResource(R.string.home_action_movies_title))
+                            TextButton(
+                                onClick = { viewModel.onEvent(HomeUiEvent.OnSeeMoreActionMovies) }
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.home_see_more),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     }
-                }
 
-                item {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(vertical = 8.dp)
-                    ) {
-                        items(uiState.actionMovies) { movie ->
-                            ActionMovieItem(
-                                movie = movie,
-                                onClick = { onMovieClick(movie) }
-                            )
-                        }
-                    }
-                }
-            }
-
-            if (uiState.seriesMovies.isNotEmpty()) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        SectionTitle(title = stringResource(R.string.home_series_movies_title))
-                        TextButton(
-                            onClick = { onNavigateToDestination(Destination.SERIES) }
+                    item {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            contentPadding = PaddingValues(vertical = 8.dp)
                         ) {
-                            Text(
-                                text = stringResource(R.string.home_see_more),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                            items(uiState.actionMovies) { movie ->
+                                ActionMovieItem(
+                                    movie = movie,
+                                    onClick = { onMovieClick(movie) }
+                                )
+                            }
                         }
                     }
                 }
 
-                item {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(vertical = 8.dp)
-                    ) {
-                        items(uiState.seriesMovies) { movie ->
-                            ActionMovieItem(
-                                movie = movie,
-                                onClick = { onMovieClick(movie) }
-                            )
-                        }
-                    }
-                }
-            }
-
-            if (uiState.singleMovies.isNotEmpty()) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        SectionTitle(title = stringResource(R.string.home_single_movies_title))
-                        TextButton(
-                            onClick = { onNavigateToDestination(Destination.SINGLE) }
+                if (uiState.seriesMovies.isNotEmpty()) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = stringResource(R.string.home_see_more),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                            SectionTitle(title = stringResource(R.string.home_series_movies_title))
+                            TextButton(
+                                onClick = { onNavigateToDestination(Destination.SERIES) }
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.home_see_more),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     }
-                }
 
-                item {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(vertical = 8.dp)
-                    ) {
-                        items(uiState.singleMovies) { movie ->
-                            ActionMovieItem(
-                                movie = movie,
-                                onClick = { onMovieClick(movie) }
-                            )
-                        }
-                    }
-                }
-            }
-
-            if (uiState.animeMovies.isNotEmpty()) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        SectionTitle(title = stringResource(R.string.home_anime_movies_title))
-                        TextButton(
-                            onClick = { onNavigateToDestination(Destination.ANIME) }
+                    item {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            contentPadding = PaddingValues(vertical = 8.dp)
                         ) {
-                            Text(
-                                text = stringResource(R.string.home_see_more),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                            items(uiState.seriesMovies) { movie ->
+                                ActionMovieItem(
+                                    movie = movie,
+                                    onClick = { onMovieClick(movie) }
+                                )
+                            }
                         }
                     }
                 }
 
-                item {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(vertical = 8.dp)
-                    ) {
-                        items(uiState.animeMovies) { movie ->
-                            ActionMovieItem(
-                                movie = movie,
-                                onClick = { onMovieClick(movie) }
-                            )
+                if (uiState.singleMovies.isNotEmpty()) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            SectionTitle(title = stringResource(R.string.home_single_movies_title))
+                            TextButton(
+                                onClick = { onNavigateToDestination(Destination.SINGLE) }
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.home_see_more),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            contentPadding = PaddingValues(vertical = 8.dp)
+                        ) {
+                            items(uiState.singleMovies) { movie ->
+                                ActionMovieItem(
+                                    movie = movie,
+                                    onClick = { onMovieClick(movie) }
+                                )
+                            }
                         }
                     }
                 }
-            }
 
-            if (uiState.isLoading && !uiState.isRefreshing) {
-                item {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                if (uiState.animeMovies.isNotEmpty()) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            SectionTitle(title = stringResource(R.string.home_anime_movies_title))
+                            TextButton(
+                                onClick = { onNavigateToDestination(Destination.ANIME) }
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.home_see_more),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            contentPadding = PaddingValues(vertical = 8.dp)
+                        ) {
+                            items(uiState.animeMovies) { movie ->
+                                ActionMovieItem(
+                                    movie = movie,
+                                    onClick = { onMovieClick(movie) }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (uiState.isLoading && !uiState.isRefreshing) {
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
                     }
                 }
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeAppBar(
+    onMenuClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TopAppBar(
+        modifier = modifier,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent
+        ),
+        title = {
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = stringResource(R.string.home_appbar_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = stringResource(R.string.home_appbar_subtitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        navigationIcon = {
+            IconButton(onClick = onMenuClick) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_menu),
+                    contentDescription = stringResource(R.string.home_menu)
+                )
+            }
+        }
+    )
 }
 
 @Composable
