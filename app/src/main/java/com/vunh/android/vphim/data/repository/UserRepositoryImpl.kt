@@ -27,7 +27,6 @@ class UserRepositoryImpl @Inject constructor(
                 email = response.email,
                 avatarUrl = response.image
             )
-            userLocalDataSource.saveUser(user)
             return user
         } catch (e: HttpException) {
             throw Exception(

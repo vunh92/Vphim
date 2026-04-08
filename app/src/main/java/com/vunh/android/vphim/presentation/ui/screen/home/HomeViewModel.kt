@@ -2,6 +2,7 @@ package com.vunh.android.vphim.presentation.ui.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vunh.android.vphim.data.local.ProfileManager
 import com.vunh.android.vphim.domain.usecase.GetAnimeMoviesUseCase
 import com.vunh.android.vphim.domain.usecase.GetCategoriesUseCase
 import com.vunh.android.vphim.domain.usecase.GetMoviesByCategoryUseCase
@@ -29,12 +30,14 @@ class HomeViewModel @Inject constructor(
     private val getSeriesMoviesUseCase: GetSeriesMoviesUseCase,
     private val getSingleMoviesUseCase: GetSingleMoviesUseCase,
     private val getAnimeMoviesUseCase: GetAnimeMoviesUseCase,
+    private val profileManager: ProfileManager,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
         observeMovies()
+        observeCurrentUser()
         loadData()
     }
 
@@ -62,7 +65,6 @@ class HomeViewModel @Inject constructor(
                 )
             }
             try {
-                // Tải danh mục, phim hành động, phim bộ, phim lẻ, phim hoạt hình và làm mới danh sách phim song song
                 val categoriesDeferred = async { getCategoriesUseCase() }
                 val actionMoviesDeferred = async { getMoviesByCategoryUseCase(categorySlug = "hanh-dong") }
                 val seriesMoviesDeferred = async { getSeriesMoviesUseCase() }
@@ -98,6 +100,16 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun observeCurrentUser() {
+        profileManager.currentUser
+            .onEach { user ->
+                _uiState.update { state ->
+                    state.copy(user = user)
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: HomeUiEvent) {

@@ -2,6 +2,7 @@ package com.vunh.android.vphim.presentation.ui.screen.home
 
 import com.vunh.android.vphim.domain.model.Category
 import com.vunh.android.vphim.domain.model.Movie
+import com.vunh.android.vphim.domain.model.User
 
 data class HomeUiState(
     val isLoading: Boolean = false,
@@ -14,4 +15,7 @@ data class HomeUiState(
     val singleMovies: List<Movie> = emptyList(),
     val animeMovies: List<Movie> = emptyList(),
     val errorMessage: String? = null,
-)
+    val user: User? = null
+) {
+    val isLoggedIn: Boolean get() = user != null
+}

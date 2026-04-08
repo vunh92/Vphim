@@ -2,13 +2,12 @@ package com.vunh.android.vphim.presentation.ui.screen.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vunh.android.vphim.data.local.ProfileManager
 import com.vunh.android.vphim.domain.model.User
-import com.vunh.android.vphim.domain.usecase.GetSavedUserUseCase
 import com.vunh.android.vphim.domain.usecase.LoginUseCase
-import com.vunh.android.vphim.domain.usecase.LogoutUseCase
-import com.vunh.android.vphim.domain.usecase.SaveUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,16 +18,20 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val saveUserUseCase: SaveUserUseCase,
-    private val getSavedUserUseCase: GetSavedUserUseCase,
-    private val logoutUseCase: LogoutUseCase,
+    private val profileManager: ProfileManager,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
-        getSavedUserUseCase()?.let { user ->
-            applyLoggedInUser(user)
+        viewModelScope.launch {
+            profileManager.currentUser.collectLatest { user ->
+                if (user != null) {
+                    applyLoggedInUser(user)
+                } else if (_uiState.value.isLoggedIn) {
+                    _uiState.update { ProfileUiState() }
+                }
+            }
         }
     }
 
@@ -101,10 +104,7 @@ class ProfileViewModel @Inject constructor(
             }
             
             ProfileUiEvent.OnLogout -> {
-                viewModelScope.launch {
-                    logoutUseCase()
-                    _uiState.update { ProfileUiState() }
-                }
+                profileManager.clearUser()
             }
         }
     }
@@ -115,8 +115,7 @@ class ProfileViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, loginError = null) }
             try {
                 val user = loginUseCase(currentState.username, currentState.password)
-                saveUserUseCase(user)
-                applyLoggedInUser(user)
+                profileManager.setUser(user)
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, loginError = e.message ?: "Đăng nhập thất bại") }
             }
@@ -140,8 +139,15 @@ class ProfileViewModel @Inject constructor(
                 email = "user@vphim.com",
                 avatarUrl = "https://i.pravatar.cc/300?u=\$0"
             )
-            saveUserUseCase(user)
-            applyLoggedInUser(user, isOtpPopupVisible = false)
+            profileManager.setUser(user)
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    isOtpPopupVisible = false,
+                    otpCode = "",
+                    otpError = null
+                )
+            }
         }
     }
 
@@ -172,12 +178,10 @@ class ProfileViewModel @Inject constructor(
                 email = state.email,
                 avatarUrl = state.avatarUrl
             )
-            saveUserUseCase(updatedUser)
+            profileManager.setUser(updatedUser)
             _uiState.update { it.copy(
                 isLoading = false,
                 isEditing = false,
-                name = it.editName,
-                displayPhoneNumber = it.editPhone,
                 editNameError = null,
                 editPhoneError = null
             ) }

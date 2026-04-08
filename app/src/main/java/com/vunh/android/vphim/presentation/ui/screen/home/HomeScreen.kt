@@ -51,6 +51,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -60,6 +61,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.vunh.android.vphim.R
 import com.vunh.android.vphim.domain.model.Movie
+import com.vunh.android.vphim.domain.model.User
 import com.vunh.android.vphim.presentation.ui.components.ContentCard
 import com.vunh.android.vphim.presentation.ui.components.SectionTitle
 import com.vunh.android.vphim.presentation.ui.navigation.Destination
@@ -85,10 +87,17 @@ fun HomeScreen(
         drawerContent = {
             ModalDrawerSheet {
                 DrawerHeader(
+                    user = uiState.user,
                     onLoginClick = {
                         coroutineScope.launch {
                             drawerState.close()
                             onLoginClick()
+                        }
+                    },
+                    onProfileClick = {
+                        coroutineScope.launch {
+                            drawerState.close()
+                            onLoginClick() 
                         }
                     }
                 )
@@ -370,13 +379,16 @@ private fun HomeAppBar(
 
 @Composable
 private fun DrawerHeader(
+    user: User?,
     onLoginClick: () -> Unit,
+    onProfileClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primary)
+            .clickable(enabled = user != null, onClick = onProfileClick)
             .padding(horizontal = 20.dp, vertical = 28.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -386,49 +398,64 @@ private fun DrawerHeader(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                modifier = Modifier.size(56.dp),
+                modifier = Modifier.size(64.dp),
                 shape = CircleShape,
                 color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.18f)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = stringResource(R.string.drawer_avatar_initials),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
+                    if (user?.avatarUrl != null) {
+                        AsyncImage(
+                            model = user.avatarUrl,
+                            contentDescription = "Avatar",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Text(
+                            text = user?.name?.take(2)?.uppercase() ?: stringResource(R.string.drawer_avatar_initials),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
             }
 
-            Button(
-                onClick = onLoginClick,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary,
-                    contentColor = MaterialTheme.colorScheme.primary
-                ),
-                shape = RoundedCornerShape(12.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = "Đăng nhập",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold
-                )
+            if (user == null) {
+                Button(
+                    onClick = onLoginClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimary,
+                        contentColor = MaterialTheme.colorScheme.primary
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = "Đăng nhập",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
 
-        Text(
-            text = stringResource(R.string.drawer_user_name),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = user?.name ?: stringResource(R.string.drawer_user_name),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
 
-        Text(
-            text = stringResource(R.string.drawer_user_email),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f)
-        )
+            Text(
+                text = user?.email ?: stringResource(R.string.drawer_user_email),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f)
+            )
+        }
 
         Spacer(modifier = Modifier.height(4.dp))
     }
