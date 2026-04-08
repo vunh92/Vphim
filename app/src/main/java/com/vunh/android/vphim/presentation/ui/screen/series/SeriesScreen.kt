@@ -19,7 +19,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -61,49 +63,58 @@ fun SeriesScreen(
         }
     }
 
-    PullToRefreshBox(
-        isRefreshing = uiState.isRefreshing,
-        onRefresh = { viewModel.onEvent(SeriesUiEvent.Refresh) },
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column(
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.home_series_movies_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            )
+        }
+    ) { innerPadding ->
+        PullToRefreshBox(
+            isRefreshing = uiState.isRefreshing,
+            onRefresh = { viewModel.onEvent(SeriesUiEvent.Refresh) },
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .padding(innerPadding)
         ) {
-            Text(
-                text = stringResource(R.string.home_series_movies_title),
-                modifier = Modifier.padding(20.dp),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-
-            if (uiState.isLoading && uiState.movies.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                LazyVerticalGrid(
-                    state = gridState,
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    itemsIndexed(uiState.movies) { index, movie ->
-                        SeriesMovieItem(movie = movie)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                if (uiState.isLoading && uiState.movies.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
                     }
+                } else {
+                    LazyVerticalGrid(
+                        state = gridState,
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        itemsIndexed(uiState.movies) { index, movie ->
+                            SeriesMovieItem(movie = movie)
+                        }
 
-                    if (uiState.isLoadingMore) {
-                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(modifier = Modifier.size(32.dp))
+                        if (uiState.isLoadingMore) {
+                            item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(modifier = Modifier.size(32.dp))
+                                }
                             }
                         }
                     }
