@@ -1,5 +1,6 @@
 package com.vunh.android.vphim.presentation.ui.screen.home
 
+import android.R.attr.text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -13,13 +14,31 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.CardGiftcard
+import androidx.compose.material.icons.filled.CardMembership
+import androidx.compose.material.icons.filled.ConfirmationNumber
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Stars
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
@@ -31,13 +50,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -53,10 +72,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.vunh.android.vphim.R
@@ -81,11 +105,17 @@ fun HomeScreen(
     val bannerMovies = uiState.movies.take(5)
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
+    val drawerScrollState = rememberScrollState()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(
+                drawerContainerColor = Color(0xFFF8F9FA),
+                drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp),
+                modifier = Modifier.width(320.dp),
+                windowInsets = WindowInsets(0, 0, 0, 0)
+            ) {
                 DrawerHeader(
                     user = uiState.user,
                     onLoginClick = {
@@ -97,35 +127,168 @@ fun HomeScreen(
                     onProfileClick = {
                         coroutineScope.launch {
                             drawerState.close()
-                            onLoginClick() 
+                            onLoginClick()
                         }
                     }
                 )
-                Destination.entries.forEach { destination ->
-                    NavigationDrawerItem(
-                        label = { Text(destination.label) },
-                        selected = destination == Destination.HOME,
-                        onClick = {
-                            coroutineScope.launch {
-                                drawerState.close()
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(drawerScrollState)
+                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    if (uiState.isLoggedIn) {
+                        // Account Menu Section
+                        Surface(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color.White,
+                            shadowElevation = 0.dp
+                        ) {
+                            Column {
+                                DrawerMenuItem(
+                                    iconVector = Icons.Default.Notifications,
+                                    label = "Thông báo",
+                                    onClick = {}
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(start = 56.dp), thickness = 0.5.dp, color = Color(0xFFF1F1F1))
+                                DrawerMenuItem(
+                                    iconVector = Icons.Default.AccountBalanceWallet,
+                                    label = "Tiền Dư",
+                                    secondaryText = "0đ",
+                                    onClick = {}
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(start = 56.dp), thickness = 0.5.dp, color = Color(0xFFF1F1F1))
+                                DrawerMenuItem(
+                                    iconVector = Icons.Default.ConfirmationNumber,
+                                    label = "Phiếu mua hàng",
+                                    onClick = {}
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(start = 56.dp), thickness = 0.5.dp, color = Color(0xFFF1F1F1))
+                                DrawerMenuItem(
+                                    iconVector = Icons.Default.CardGiftcard,
+                                    label = "Quà của tôi",
+                                    onClick = {}
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(start = 56.dp), thickness = 0.5.dp, color = Color(0xFFF1F1F1))
+                                DrawerMenuItem(
+                                    iconVector = Icons.Default.Stars,
+                                    label = "Ưu đãi đặc biệt",
+                                    onClick = {}
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(start = 56.dp), thickness = 0.5.dp, color = Color(0xFFF1F1F1))
+                                DrawerMenuItem(
+                                    iconVector = Icons.Default.CardMembership,
+                                    label = "Tích điểm đổi quà",
+                                    onClick = {}
+                                )
                             }
-                            if (destination != Destination.HOME) {
-                                onNavigateToDestination(destination)
-                            }
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(destination.icon),
-                                contentDescription = destination.label
+                        }
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+
+                    // Support Section
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Hỗ trợ khách hàng",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
                             )
-                        },
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                        colors = NavigationDrawerItemDefaults.colors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    )
+                        }
+
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color.White,
+                            shadowElevation = 0.dp
+                        ) {
+                            Column {
+                                DrawerSupportItem(
+                                    icon = Icons.Default.Phone,
+                                    label = "Tư vấn: 1900.1908 (7:30 - 21:00)",
+                                    showArrow = false
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(start = 56.dp), thickness = 0.5.dp, color = Color(0xFFF1F1F1))
+                                DrawerSupportItem(
+                                    icon = Icons.Default.Phone,
+                                    label = buildAnnotatedString {
+                                        append("Khiếu nại: 1800.1067 (7:30 - 21:00) ")
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.Black)) {
+                                            append("Miễn phí")
+                                        }
+                                    },
+                                    showArrow = false
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(start = 56.dp), thickness = 0.5.dp, color = Color(0xFFF1F1F1))
+                                DrawerSupportItem(
+                                    icon = Icons.Default.LocationOn,
+                                    label = "Tìm kiếm cửa hàng",
+                                    showArrow = true
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(start = 56.dp), thickness = 0.5.dp, color = Color(0xFFF1F1F1))
+                                DrawerSupportItem(
+                                    icon = Icons.Default.Info,
+                                    label = "Các chính sách khác",
+                                    showArrow = true
+                                )
+                                HorizontalDivider(modifier = Modifier.padding(start = 56.dp), thickness = 0.5.dp, color = Color(0xFFF1F1F1))
+                                DrawerSupportItem(
+                                    icon = Icons.Default.Refresh,
+                                    label = "Cập nhật ứng dụng",
+                                    showArrow = true
+                                )
+                            }
+                        }
+                    }
+
+                    if (uiState.isLoggedIn) {
+                        Spacer(modifier = Modifier.height(24.dp))
+                        // Logout Button
+                        Button(
+                            onClick = { 
+                                coroutineScope.launch {
+                                    drawerState.close()
+                                    viewModel.onEvent(HomeUiEvent.OnLogout)
+                                }
+                            },
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = Color.Red
+                            ),
+                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+                        ) {
+                            Icon(imageVector = Icons.AutoMirrored.Filled.Logout, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(R.string.profile_logout),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
             }
         }
@@ -338,6 +501,105 @@ fun HomeScreen(
     }
 }
 
+@Composable
+private fun DrawerMenuItem(
+    iconVector: ImageVector,
+    label: String,
+    secondaryText: String? = null,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = iconVector,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+            tint = Color(0xFF616161)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = label,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyLarge.copy(
+                fontSize = 15.sp,
+                color = Color(0xFF424242)
+            )
+        )
+        if (secondaryText != null) {
+            Text(
+                text = secondaryText,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                ),
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+        }
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = Color(0xFFBDBDBD)
+        )
+    }
+}
+
+@Composable
+private fun DrawerSupportItem(
+    icon: ImageVector,
+    label: Any, // Can be String or AnnotatedString
+    showArrow: Boolean = true,
+    onClick: () -> Unit = {}
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+            tint = Color(0xFF616161)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Box(modifier = Modifier.weight(1f)) {
+            if (label is String) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = 15.sp,
+                        color = Color(0xFF424242)
+                    )
+                )
+            } else if (label is androidx.compose.ui.text.AnnotatedString) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = 15.sp,
+                        color = Color(0xFF424242)
+                    )
+                )
+            }
+        }
+        if (showArrow) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = Color(0xFFBDBDBD)
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeAppBar(
@@ -388,6 +650,7 @@ private fun DrawerHeader(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primary)
+            .statusBarsPadding()
             .clickable(enabled = user != null, onClick = onProfileClick)
             .padding(horizontal = 20.dp, vertical = 28.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -413,8 +676,9 @@ private fun DrawerHeader(
                             contentScale = ContentScale.Crop
                         )
                     } else {
+                        val initials = user?.name?.split(" ")?.filter { it.isNotEmpty() }?.take(2)?.map { it.first() }?.joinToString("") ?: "VP"
                         Text(
-                            text = user?.name?.take(2)?.uppercase() ?: stringResource(R.string.drawer_avatar_initials),
+                            text = initials.uppercase(),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimary
@@ -441,20 +705,27 @@ private fun DrawerHeader(
                 }
             }
         }
-
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        if (user == null) {
             Text(
-                text = user?.name ?: stringResource(R.string.drawer_user_name),
-                style = MaterialTheme.typography.titleLarge,
+                text = stringResource(R.string.profile_welcome_title),
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimary
             )
-
-            Text(
-                text = user?.email ?: stringResource(R.string.drawer_user_email),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f)
-            )
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = user.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+                Text(
+                    text = user.email,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(4.dp))

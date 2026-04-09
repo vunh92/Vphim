@@ -119,6 +119,9 @@ class HomeViewModel @Inject constructor(
             HomeUiEvent.OnSeeMoreSeriesMovies -> {}
             HomeUiEvent.OnSeeMoreSingleMovies -> {}
             HomeUiEvent.OnSeeMoreAnimeMovies -> {}
+            HomeUiEvent.OnLogout -> {
+                profileManager.clearUser()
+            }
         }
     }
 }

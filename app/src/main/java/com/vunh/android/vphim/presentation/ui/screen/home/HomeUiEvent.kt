@@ -6,4 +6,5 @@ sealed class HomeUiEvent {
     object OnSeeMoreSeriesMovies : HomeUiEvent()
     object OnSeeMoreSingleMovies : HomeUiEvent()
     object OnSeeMoreAnimeMovies : HomeUiEvent()
+    object OnLogout : HomeUiEvent()
 }
