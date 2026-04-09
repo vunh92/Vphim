@@ -25,6 +25,7 @@ import com.vunh.android.vphim.presentation.ui.screen.home.HomeScreen
 import com.vunh.android.vphim.presentation.ui.screen.profile.ProfileScreen
 import com.vunh.android.vphim.presentation.ui.screen.series.SeriesScreen
 import com.vunh.android.vphim.presentation.ui.screen.single.SingleMoviesScreen
+import com.vunh.android.vphim.presentation.ui.screen.search.SearchScreen
 import com.vunh.android.vphim.ui.theme.VphimTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -118,6 +119,9 @@ fun VphimApp() {
                         },
                         onLoginClick = {
                             navController.navigate(LOGIN_ROUTE)
+                        },
+                        onSearchClick = {
+                            navController.navigate(SEARCH_ROUTE)
                         }
                     )
                 }
@@ -128,6 +132,17 @@ fun VphimApp() {
                 composable(LOGIN_ROUTE) {
                     ProfileScreen(
                         onBackClick = { navController.navigateUp() }
+                    )
+                }
+                composable(SEARCH_ROUTE) {
+                    SearchScreen(
+                        onBackClick = { navController.navigateUp() },
+                        onMovieClick = { movie ->
+                            navController.currentBackStackEntry
+                                ?.savedStateHandle
+                                ?.set(SELECTED_MOVIE_KEY, movie)
+                            navController.navigate("$DETAIL_ROUTE/${movie.slug}")
+                        }
                     )
                 }
                 composable(
@@ -157,6 +172,7 @@ private const val DETAIL_ROUTE = "detail"
 private const val DETAIL_SLUG_ARG = "slug"
 private const val SELECTED_MOVIE_KEY = "selected_movie"
 private const val LOGIN_ROUTE = "login"
+private const val SEARCH_ROUTE = "search"
 
 private fun fallbackMovie(slug: String): Movie {
     return Movie(

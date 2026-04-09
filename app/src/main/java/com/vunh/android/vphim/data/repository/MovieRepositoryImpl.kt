@@ -3,6 +3,7 @@ package com.vunh.android.vphim.data.repository
 import com.vunh.android.vphim.data.mapper.toDomain
 import com.vunh.android.vphim.data.remote.api.PhimApiService
 import com.vunh.android.vphim.data.remote.dto.MovieDetailResponseDto
+import com.vunh.android.vphim.data.remote.dto.SearchMoviesResponseDto
 import com.vunh.android.vphim.domain.model.Category
 import com.vunh.android.vphim.domain.model.Movie
 import com.vunh.android.vphim.domain.repository.MovieRepository
@@ -52,6 +53,13 @@ class MovieRepositoryImpl @Inject constructor(
     override suspend fun getCategories(): List<Category> {
         val response = phimApiService.getCategories()
         return response.map { it.toDomain() }
+    }
+
+    override suspend fun getCountries(): List<Category> {
+        val response = phimApiService.getCountries()
+        return response.map { dto ->
+            Category(id = dto.id, name = dto.name, slug = dto.slug)
+        }
     }
 
     override suspend fun getMoviesByCategory(categorySlug: String, page: Int, limit: Int): List<Movie> {
@@ -128,5 +136,31 @@ class MovieRepositoryImpl @Inject constructor(
 
     override suspend fun getMovieDetail(slug: String): MovieDetailResponseDto {
         return phimApiService.getMovieDetail(slug)
+    }
+
+    override suspend fun searchMovies(
+        keyword: String?,
+        page: Int,
+        limit: Int,
+        typeList: String?,
+        sortField: String?,
+        sortType: String?,
+        sortLang: String?,
+        category: String?,
+        country: String?,
+        year: Int?
+    ): SearchMoviesResponseDto {
+        return phimApiService.searchMovies(
+            keyword = keyword,
+            page = page,
+            limit = limit,
+            typeList = typeList,
+            sortField = sortField,
+            sortType = sortType,
+            sortLang = sortLang,
+            category = category,
+            country = country,
+            year = year
+        )
     }
 }

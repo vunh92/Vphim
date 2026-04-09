@@ -1,6 +1,5 @@
 package com.vunh.android.vphim.presentation.ui.screen.home
 
-import android.R.attr.text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -100,6 +99,7 @@ fun HomeScreen(
     onNavigateToDestination: (Destination) -> Unit = {},
     onMovieClick: (Movie) -> Unit = {},
     onLoginClick: () -> Unit = {},
+    onSearchClick: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -303,6 +303,7 @@ fun HomeScreen(
                         drawerState.open()
                     }
                 },
+                onSearchClick = onSearchClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.primary)
@@ -605,6 +606,7 @@ private fun DrawerSupportItem(
 @Composable
 private fun HomeAppBar(
     onMenuClick: () -> Unit,
+    onSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
@@ -638,7 +640,7 @@ private fun HomeAppBar(
             }
         },
         actions = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = onSearchClick) {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = stringResource(R.string.home_search),

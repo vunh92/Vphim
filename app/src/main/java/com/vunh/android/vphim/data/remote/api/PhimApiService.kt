@@ -5,6 +5,8 @@ import com.vunh.android.vphim.data.remote.dto.AnimeMoviesResponseDto
 import com.vunh.android.vphim.data.remote.dto.CategoryDto
 import com.vunh.android.vphim.data.remote.dto.LatestMoviesResponseDto
 import com.vunh.android.vphim.data.remote.dto.MovieDetailResponseDto
+import com.vunh.android.vphim.data.remote.dto.SearchCountryDto
+import com.vunh.android.vphim.data.remote.dto.SearchMoviesResponseDto
 import com.vunh.android.vphim.data.remote.dto.SeriesMoviesResponseDto
 import com.vunh.android.vphim.data.remote.dto.SingleMoviesResponseDto
 import retrofit2.http.GET
@@ -20,6 +22,9 @@ interface PhimApiService {
 
     @GET("the-loai")
     suspend fun getCategories(): List<CategoryDto>
+
+    @GET("quoc-gia")
+    suspend fun getCountries(): List<SearchCountryDto>
 
     @GET("v1/api/the-loai/{categorySlug}")
     suspend fun getMoviesByCategory(
@@ -50,4 +55,18 @@ interface PhimApiService {
     suspend fun getMovieDetail(
         @Path("slug") slug: String
     ): MovieDetailResponseDto
+
+    @GET("v1/api/tim-kiem")
+    suspend fun searchMovies(
+        @Query("keyword") keyword: String?,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int,
+        @Query("type_list") typeList: String? = null,
+        @Query("sort_field") sortField: String? = null,
+        @Query("sort_type") sortType: String? = null,
+        @Query("sort_lang") sortLang: String? = null,
+        @Query("category") category: String? = null,
+        @Query("country") country: String? = null,
+        @Query("year") year: Int? = null
+    ): SearchMoviesResponseDto
 }

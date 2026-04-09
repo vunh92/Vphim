@@ -1,6 +1,7 @@
 package com.vunh.android.vphim.domain.repository
 
 import com.vunh.android.vphim.data.remote.dto.MovieDetailResponseDto
+import com.vunh.android.vphim.data.remote.dto.SearchMoviesResponseDto
 import com.vunh.android.vphim.domain.model.Category
 import com.vunh.android.vphim.domain.model.Movie
 import kotlinx.coroutines.flow.Flow
@@ -11,9 +12,22 @@ interface MovieRepository {
     suspend fun refreshMovies(page: Int = 1)
     suspend fun toggleFavorite(movieId: String)
     suspend fun getCategories(): List<Category>
+    suspend fun getCountries(): List<Category>
     suspend fun getMoviesByCategory(categorySlug: String, page: Int = 1, limit: Int = 10): List<Movie>
     suspend fun getSeriesMovies(page: Int = 1, limit: Int = 10): List<Movie>
     suspend fun getSingleMovies(page: Int = 1, limit: Int = 10): List<Movie>
     suspend fun getAnimeMovies(page: Int = 1, limit: Int = 10): List<Movie>
     suspend fun getMovieDetail(slug: String): MovieDetailResponseDto
+    suspend fun searchMovies(
+        keyword: String?,
+        page: Int,
+        limit: Int,
+        typeList: String? = null,
+        sortField: String? = null,
+        sortType: String? = null,
+        sortLang: String? = null,
+        category: String? = null,
+        country: String? = null,
+        year: Int? = null
+    ): SearchMoviesResponseDto
 }
