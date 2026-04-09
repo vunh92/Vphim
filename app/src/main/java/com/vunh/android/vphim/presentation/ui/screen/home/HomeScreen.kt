@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Stars
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.graphics.Brush
@@ -633,6 +634,15 @@ private fun HomeAppBar(
                 Icon(
                     painter = painterResource(R.drawable.ic_menu),
                     contentDescription = stringResource(R.string.home_menu)
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = {}) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(R.string.home_search),
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

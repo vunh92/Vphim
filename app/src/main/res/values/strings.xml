@@ -10,6 +10,7 @@
     <string name="home_appbar_title">Vphim</string>
     <string name="home_appbar_subtitle">Khám phá phim mới mỗi ngày</string>
     <string name="home_menu">Mở menu điều hướng</string>
+    <string name="home_search">Tìm kiếm</string>
     <string name="home_categories_title">Danh mục nổi bật</string>
     <string name="home_action_movies_title">Phim Hành động</string>
     <string name="home_series_movies_title">Phim Bộ</string>

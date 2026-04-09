@@ -28,6 +28,7 @@ import com.vunh.android.vphim.presentation.ui.screen.single.SingleMoviesScreen
 import com.vunh.android.vphim.ui.theme.VphimTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -80,11 +81,11 @@ fun VphimApp() {
                             ?.any { it.route == destination.route } == true,
                         onClick = {
                             navController.navigate(destination.route) {
-                                launchSingleTop = true
-                                restoreState = true
-                                popUpTo(Destination.HOME.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
+                                launchSingleTop = true
+                                restoreState = true
                             }
                         }
                     )
@@ -102,7 +103,11 @@ fun VphimApp() {
                     HomeScreen(
                         onNavigateToDestination = { destination ->
                             navController.navigate(destination.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
                                 launchSingleTop = true
+                                restoreState = true
                             }
                         },
                         onMovieClick = { movie ->
