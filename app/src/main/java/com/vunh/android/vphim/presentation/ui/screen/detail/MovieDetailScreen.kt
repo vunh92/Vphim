@@ -18,6 +18,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -50,12 +53,13 @@ import com.vunh.android.vphim.domain.model.Movie
 fun MovieDetailScreen(
     movie: Movie,
     onBack: () -> Unit,
+    onPlayClick: (String) -> Unit = {},
     viewModel: MovieDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(movie.slug) {
-        viewModel.loadMovieDetail(movie.slug)
+    LaunchedEffect(movie.slug, movie.id) {
+        viewModel.setInitialMovieData(movie)
     }
 
     BackHandler(onBack = onBack)
@@ -94,22 +98,43 @@ fun MovieDetailScreen(
                             )
                     )
 
-                    IconButton(
-                        onClick = onBack,
+                    Row(
                         modifier = Modifier
+                            .fillMaxWidth()
                             .statusBarsPadding()
-                            .padding(start = 16.dp, top = 8.dp)
-                            .align(Alignment.TopStart)
-                            .background(
-                                color = Color.Black.copy(alpha = 0.3f),
-                                shape = CircleShape
-                            )
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = stringResource(R.string.detail_back),
-                            tint = Color.White
-                        )
+                        IconButton(
+                            onClick = onBack,
+                            modifier = Modifier
+                                .background(
+                                    color = Color.Black.copy(alpha = 0.3f),
+                                    shape = CircleShape
+                                )
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_arrow_back),
+                                contentDescription = stringResource(R.string.detail_back),
+                                tint = Color.White
+                            )
+                        }
+
+                        IconButton(
+                            onClick = { viewModel.toggleFavorite() },
+                            modifier = Modifier
+                                .background(
+                                    color = Color.Black.copy(alpha = 0.3f),
+                                    shape = CircleShape
+                                )
+                        ) {
+                            Icon(
+                                imageVector = if (uiState.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                contentDescription = stringResource(R.string.detail_favorite_desc),
+                                tint = if (uiState.isFavorite) Color.Red else Color.White
+                            )
+                        }
                     }
 
                     Column(
@@ -196,14 +221,14 @@ fun MovieDetailScreen(
 
                         if (detail.actor.isNotEmpty()) {
                             DetailSection(
-                                title = "Diễn viên",
+                                title = stringResource(R.string.detail_actors),
                                 content = detail.actor.joinToString(", ")
                             )
                         }
 
                         if (detail.director.isNotEmpty()) {
                             DetailSection(
-                                title = "Đạo diễn",
+                                title = stringResource(R.string.detail_directors),
                                 content = detail.director.joinToString(", ")
                             )
                         }
@@ -250,7 +275,7 @@ fun MovieDetailScreen(
                         ) {
                             episodeGroup.serverData.forEach { episode ->
                                 Button(
-                                    onClick = { /* Handle play movie */ },
+                                    onClick = { onPlayClick(episode.linkEmbed) },
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.surfaceVariant,

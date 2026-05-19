@@ -1,5 +1,6 @@
 package com.vunh.android.vphim.data.repository
 
+import com.vunh.android.vphim.data.local.MovieLocalDataSource
 import com.vunh.android.vphim.data.mapper.toDomain
 import com.vunh.android.vphim.data.remote.api.PhimApiService
 import com.vunh.android.vphim.data.remote.dto.MovieDetailResponseDto
@@ -17,9 +18,10 @@ import javax.inject.Singleton
 @Singleton
 class MovieRepositoryImpl @Inject constructor(
     private val phimApiService: PhimApiService,
+    private val movieLocalDataSource: MovieLocalDataSource,
 ) : MovieRepository {
     private val remoteMovies = MutableStateFlow<List<Movie>>(emptyList())
-    private val favoriteMovieIds = MutableStateFlow<Set<String>>(emptySet())
+    private val favoriteMovieIds = MutableStateFlow(movieLocalDataSource.getFavoriteIds())
 
     override fun getMovies(): Flow<List<Movie>> {
         return combine(remoteMovies, favoriteMovieIds) { movies, favoriteIds ->
@@ -29,8 +31,16 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getFavoriteMovies(): Flow<List<Movie>> = getMovies().map { list ->
-        list.filter { it.isFavorite }
+    override fun getFavoriteMovies(): Flow<List<Movie>> {
+        return favoriteMovieIds.map { ids ->
+            movieLocalDataSource.getFavoriteMovies()
+                .filter { it.id in ids }
+                .map { it.copy(isFavorite = true) }
+        }
+    }
+
+    override fun isFavorite(movieId: String): Flow<Boolean> {
+        return favoriteMovieIds.map { it.contains(movieId) }
     }
 
     override suspend fun refreshMovies(page: Int) {
@@ -40,14 +50,9 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun toggleFavorite(movieId: String) {
-        val currentIds = favoriteMovieIds.value.toMutableSet()
-        if (movieId in currentIds) {
-            currentIds.remove(movieId)
-        } else {
-            currentIds.add(movieId)
-        }
-        favoriteMovieIds.value = currentIds
+    override suspend fun toggleFavorite(movie: Movie) {
+        movieLocalDataSource.toggleFavorite(movie)
+        favoriteMovieIds.value = movieLocalDataSource.getFavoriteIds()
     }
 
     override suspend fun getCategories(): List<Category> {

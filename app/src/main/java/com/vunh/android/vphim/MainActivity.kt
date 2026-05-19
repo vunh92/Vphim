@@ -20,6 +20,7 @@ import com.vunh.android.vphim.domain.model.Movie
 import com.vunh.android.vphim.presentation.ui.navigation.Destination
 import com.vunh.android.vphim.presentation.ui.screen.anime.AnimeMoviesScreen
 import com.vunh.android.vphim.presentation.ui.screen.detail.MovieDetailScreen
+import com.vunh.android.vphim.presentation.ui.screen.detail.MoviePlayerScreen
 import com.vunh.android.vphim.presentation.ui.screen.favorite.FavoriteScreen
 import com.vunh.android.vphim.presentation.ui.screen.home.HomeScreen
 import com.vunh.android.vphim.presentation.ui.screen.profile.ProfileScreen
@@ -36,6 +37,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -128,7 +131,16 @@ fun VphimApp() {
                 composable(Destination.SERIES.route) { SeriesScreen() }
                 composable(Destination.SINGLE.route) { SingleMoviesScreen() }
                 composable(Destination.ANIME.route) { AnimeMoviesScreen() }
-                composable(Destination.FAVORITES.route) { FavoriteScreen() }
+                composable(Destination.FAVORITES.route) { 
+                    FavoriteScreen(
+                        onMovieClick = { movie ->
+                            navController.currentBackStackEntry
+                                ?.savedStateHandle
+                                ?.set(SELECTED_MOVIE_KEY, movie)
+                            navController.navigate("$DETAIL_ROUTE/${movie.slug}")
+                        }
+                    ) 
+                }
                 composable(LOGIN_ROUTE) {
                     ProfileScreen(
                         onBackClick = { navController.navigateUp() }
@@ -160,8 +172,21 @@ fun VphimApp() {
 
                     MovieDetailScreen(
                         movie = movie,
-                        onBack = { navController.navigateUp() }
+                        onBack = { navController.navigateUp() },
+                        onPlayClick = { url ->
+                            val encodedUrl = URLEncoder.encode(url, StandardCharsets.UTF_8.toString())
+                            navController.navigate("$PLAYER_ROUTE/$encodedUrl")
+                        }
                     )
+                }
+                composable(
+                    route = "$PLAYER_ROUTE/{$PLAYER_URL_ARG}",
+                    arguments = listOf(
+                        navArgument(PLAYER_URL_ARG) { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val url = backStackEntry.arguments?.getString(PLAYER_URL_ARG).orEmpty()
+                    MoviePlayerScreen(url = url)
                 }
             }
         }
@@ -173,6 +198,8 @@ private const val DETAIL_SLUG_ARG = "slug"
 private const val SELECTED_MOVIE_KEY = "selected_movie"
 private const val LOGIN_ROUTE = "login"
 private const val SEARCH_ROUTE = "search"
+private const val PLAYER_ROUTE = "player"
+private const val PLAYER_URL_ARG = "url"
 
 private fun fallbackMovie(slug: String): Movie {
     return Movie(

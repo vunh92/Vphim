@@ -9,8 +9,9 @@ import kotlinx.coroutines.flow.Flow
 interface MovieRepository {
     fun getMovies(): Flow<List<Movie>>
     fun getFavoriteMovies(): Flow<List<Movie>>
+    fun isFavorite(movieId: String): Flow<Boolean>
     suspend fun refreshMovies(page: Int = 1)
-    suspend fun toggleFavorite(movieId: String)
+    suspend fun toggleFavorite(movie: Movie)
     suspend fun getCategories(): List<Category>
     suspend fun getCountries(): List<Category>
     suspend fun getMoviesByCategory(categorySlug: String, page: Int = 1, limit: Int = 10): List<Movie>

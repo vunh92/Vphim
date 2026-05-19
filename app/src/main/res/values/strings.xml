@@ -28,8 +28,25 @@
     <string name="home_movie_year_format">Năm phát hành: %1$d</string>
     <string name="home_see_more">Xem thêm</string>
 
+    <string name="drawer_notifications">Thông báo</string>
+    <string name="drawer_balance">Tiền Dư</string>
+    <string name="drawer_balance_value">%1$sđ</string>
+    <string name="drawer_vouchers">Phiếu mua hàng</string>
+    <string name="drawer_gifts">Quà của tôi</string>
+    <string name="drawer_special_offers">Ưu đãi đặc biệt</string>
+    <string name="drawer_points">Tích điểm đổi quà</string>
+    <string name="drawer_support_title">Hỗ trợ khách hàng</string>
+    <string name="drawer_support_advice">Tư vấn: 1900.1908 (7:30 - 21:00)</string>
+    <string name="drawer_support_complaint">Khiếu nại: 1800.1067 (7:30 - 21:00) </string>
+    <string name="drawer_support_free">Miễn phí</string>
+    <string name="drawer_support_find_store">Tìm kiếm cửa hàng</string>
+    <string name="drawer_support_policies">Các chính sách khác</string>
+    <string name="drawer_support_update">Cập nhật ứng dụng</string>
+
     <string name="favorites_title">Danh sách yêu thích</string>
     <string name="favorites_subtitle">Lưu lại phim bạn muốn xem sau và truy cập lại nhanh ở đây.</string>
+    <string name="favorites_empty">Chưa có phim yêu thích</string>
+    <string name="favorite_movie_year">Năm: %1$d</string>
     <string name="favorite_item_1">Mật mã đại dương</string>
     <string name="favorite_item_2">Chuyến tàu phương Bắc</string>
     <string name="favorite_item_3">Thanh âm mùa hạ</string>
@@ -72,6 +89,7 @@
     <string name="profile_logout">Đăng xuất</string>
 
     <string name="detail_back">Quay lại</string>
+    <string name="detail_favorite_desc">Yêu thích</string>
     <string name="detail_default_type">PHIM</string>
     <string name="detail_year">Năm %1$d</string>
     <string name="detail_slug">Slug: %1$s</string>
@@ -80,6 +98,8 @@
     <string name="detail_imdb">IMDb: %1$s</string>
     <string name="detail_description_title">Giới thiệu</string>
     <string name="detail_description_content">%1$s là nội dung được lấy từ nguồn phimapi. Tên gốc: %2$s. Năm phát hành: %3$d.</string>
+    <string name="detail_actors">Diễn viên</string>
+    <string name="detail_directors">Đạo diễn</string>
     <string name="drawer_avatar_initials">VN</string>
     <string name="drawer_user_name">Vu Nguyen</string>
     <string name="drawer_user_email">vu.nguyen@example.com</string>
